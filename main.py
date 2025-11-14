@@ -21,6 +21,7 @@ class Game:
                 if event.type == pygame.QUIT:
                     pygame.quit()
             self.dt = self.clock.tick(60) / 1000
+            self.screen.fill((0, 0, 0))
             self.all_sprites.draw(self.screen)
             self.all_sprites.update(self.dt)
             pygame.display.flip()

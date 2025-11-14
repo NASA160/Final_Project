@@ -21,6 +21,8 @@ class Player(pygame.sprite.Sprite):
     def move(self, dt):
         self.rect.x += self.direction.x * self.speed
         self.rect.y += self.direction.y * self.speed
+        # TODO fix normilization
+        # self.direction.normalize()
 
     def update(self, dt):
         self.inputs()
