@@ -1,28 +1,21 @@
-import math
-
-import pygame
-
 from settings import *
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self):
-        super().__init__()
-        self.image = pygame.image.load('PlayerSprites/white_square.png').convert_alpha()
-        self.rect = self.image.get_rect()
-        self.speed = 10
+    def __init__(self, pos, groups):
+        super().__init__(groups)
+        self.image = pygame.image.load('PlayerSprites/idle copy.png').convert_alpha()
+        self.image = pygame.transform.scale(self.image, (self.image.width * SCALE_FACTOR, self.image.height * SCALE_FACTOR))
+        self.rect = self.image.get_frect(center = pos)
+        self.speed = PLAYER_SPEED
         self.direction = pygame.Vector2()
 
     def inputs(self):
         self.keys = pygame.key.get_pressed()
         self.direction.y = int(self.keys[pygame.K_DOWN]) - int(self.keys[pygame.K_UP])
         self.direction.x = int(self.keys[pygame.K_RIGHT]) - int(self.keys[pygame.K_LEFT])
-        print(self.direction)
-        # TODO optimize normilization
-        # self.direction.normalize_ip()
-        # if math.fabs(self.direction.y) and math.fabs(self.direction.x):
-        #     self.direction.y *= (1/math.sqrt(2))
-        #     self.direction.x *= (1/math.sqrt(2))
+        self.direction = self.direction.normalize() if self.direction else self.direction
 
+        self.speed = PLAYER_SPRINT_SPEED if self.keys[pygame.K_1] else PLAYER_SPEED
 
     def move(self, dt):
         self.rect.x += self.direction.x * self.speed

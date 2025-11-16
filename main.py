@@ -1,5 +1,8 @@
 import pygame
+from pytmx.util_pygame import load_pygame
 
+from Sprites import Sprite
+from groups import AllSprites
 from settings import *
 from player import *
 
@@ -9,9 +12,22 @@ class Game:
         self.screen = pygame.display.set_mode(WINDOW_SIZE)
         self.clock = pygame.time.Clock()
 
-        self.all_sprites = pygame.sprite.Group()
-        self.player = Player()
-        self.all_sprites.add(self.player)
+        self.all_sprites = AllSprites()
+
+
+    def setup(self):
+        map = load_pygame('data/Maps/Map1.tmx')
+
+        for x, y, image in map.get_layer_by_name('Ground').tiles():
+            Sprite((x * TILE_SIZE * 2, y * TILE_SIZE * SCALE_FACTOR), image, self.all_sprites)
+
+        for x, y, image in map.get_layer_by_name('Water').tiles():
+            Sprite((x * TILE_SIZE * 2, y * TILE_SIZE * SCALE_FACTOR), image, self.all_sprites)
+
+        for obj in map.get_layer_by_name('Entities'):
+            if obj.name == "Player_Start":
+                self.player = Player((obj.x * SCALE_FACTOR, obj.y * SCALE_FACTOR), self.all_sprites)
+
 
     def run(self):
         running = True
@@ -19,12 +35,14 @@ class Game:
         while running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    pygame.quit()
+                    running = False
             self.dt = self.clock.tick(60) / 1000
             self.screen.fill((0, 0, 0))
-            self.all_sprites.draw(self.screen)
+            self.all_sprites.draw(self.player.rect.center)
             self.all_sprites.update(self.dt)
             pygame.display.flip()
+
+        pygame.quit()
 
 
 
@@ -33,6 +51,7 @@ class Game:
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     game = Game()
+    game.setup()
     game.run()
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
