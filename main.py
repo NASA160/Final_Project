@@ -1,7 +1,7 @@
 import pygame
 from pytmx.util_pygame import load_pygame
 
-from Sprites import Sprite
+from Sprites import Sprite, CollisionSprite
 from groups import AllSprites
 from settings import *
 from player import *
@@ -13,20 +13,28 @@ class Game:
         self.clock = pygame.time.Clock()
 
         self.all_sprites = AllSprites()
+        self.collision_sprites = pygame.sprite.Group()
 
 
     def setup(self):
         map = load_pygame('data/Maps/Map1.tmx')
 
-        for x, y, image in map.get_layer_by_name('Ground').tiles():
-            Sprite((x * TILE_SIZE * 2, y * TILE_SIZE * SCALE_FACTOR), image, self.all_sprites)
-
         for x, y, image in map.get_layer_by_name('Water').tiles():
-            Sprite((x * TILE_SIZE * 2, y * TILE_SIZE * SCALE_FACTOR), image, self.all_sprites)
+            Sprite((x * TILE_SIZE * SCALE_FACTOR, y * TILE_SIZE * SCALE_FACTOR), image, self.all_sprites)
+
+        for x, y, image in map.get_layer_by_name('Ground').tiles():
+            Sprite((x * TILE_SIZE * SCALE_FACTOR, y * TILE_SIZE * SCALE_FACTOR), image, self.all_sprites)
+
+        for x, y, image in map.get_layer_by_name('Details').tiles():
+            Sprite((x * TILE_SIZE * SCALE_FACTOR, y * TILE_SIZE * SCALE_FACTOR), image, self.all_sprites)
+
+        for obj in map.get_layer_by_name('Trees'):
+            CollisionSprite((obj.x * SCALE_FACTOR, obj.y * SCALE_FACTOR), obj.image, self.all_sprites)
 
         for obj in map.get_layer_by_name('Entities'):
             if obj.name == "Player_Start":
-                self.player = Player((obj.x * SCALE_FACTOR, obj.y * SCALE_FACTOR), self.all_sprites)
+                self.player = Player((obj.x * SCALE_FACTOR, obj.y * SCALE_FACTOR), self.all_sprites, self.collision_sprites)
+
 
 
     def run(self):
