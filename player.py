@@ -1,3 +1,6 @@
+from pygame.sprite import spritecollide
+
+from Sprites import CollisionSprite
 from settings import *
 
 class Player(pygame.sprite.Sprite):
@@ -6,8 +9,11 @@ class Player(pygame.sprite.Sprite):
         self.image = pygame.image.load('PlayerSprites/idle copy.png').convert_alpha()
         self.image = pygame.transform.scale(self.image, (self.image.width * SCALE_FACTOR, self.image.height * SCALE_FACTOR))
         self.rect = self.image.get_frect(center = pos)
+        self.hitbox_rect = self.rect
         self.speed = PLAYER_SPEED
         self.direction = pygame.Vector2()
+
+        self.collision_sprites = collision_sprites
 
     def inputs(self):
         self.keys = pygame.key.get_pressed()
@@ -19,7 +25,20 @@ class Player(pygame.sprite.Sprite):
 
     def move(self, dt):
         self.rect.x += self.direction.x * self.speed
+        self.collision('horizontal')
         self.rect.y += self.direction.y * self.speed
+        self.collision('vertical')
+
+    def collision(self, direction):
+        for sprite in self.collision_sprites:
+            # sprite.rect = sprite.rect.inflate(-50, -50)
+            if sprite.rect.colliderect(self.hitbox_rect):
+                if direction == 'horizontal':
+                    if self.direction.x > 0: self.hitbox_rect.right = sprite.rect.left
+                    if self.direction.x < 0: self.hitbox_rect.left = sprite.rect.right
+                if direction == 'vertical':
+                    if self.direction.y > 0: self.hitbox_rect.bottom = sprite.rect.top
+                    if self.direction.y < 0: self.hitbox_rect.top = sprite.rect.bottom
 
     def update(self, dt):
         self.inputs()

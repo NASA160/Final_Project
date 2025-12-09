@@ -29,7 +29,7 @@ class Game:
             Sprite((x * TILE_SIZE * SCALE_FACTOR, y * TILE_SIZE * SCALE_FACTOR), image, self.all_sprites)
 
         for obj in map.get_layer_by_name('Trees'):
-            CollisionSprite((obj.x * SCALE_FACTOR, obj.y * SCALE_FACTOR), obj.image, self.all_sprites)
+            CollisionSprite((obj.x * SCALE_FACTOR, obj.y * SCALE_FACTOR), obj.image, (self.all_sprites, self.collision_sprites))
 
         for obj in map.get_layer_by_name('Entities'):
             if obj.name == "Player_Start":
