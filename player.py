@@ -1,12 +1,9 @@
-from pygame.sprite import spritecollide
-
-from Sprites import CollisionSprite
 from settings import *
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, pos, groups, collision_sprites):
         super().__init__(groups)
-        self.image = pygame.image.load('PlayerSprites/idle copy.png').convert_alpha()
+        self.image = pygame.image.load(os.path.join('PlayerSprites', 'idle copy.png')).convert_alpha()
         self.image = pygame.transform.scale(self.image, (self.image.width * SCALE_FACTOR, self.image.height * SCALE_FACTOR))
         self.rect = self.image.get_frect(center = pos)
         self.hitbox_rect = self.rect
@@ -24,9 +21,9 @@ class Player(pygame.sprite.Sprite):
         self.speed = PLAYER_SPRINT_SPEED if self.keys[pygame.K_1] else PLAYER_SPEED
 
     def move(self, dt):
-        self.rect.x += self.direction.x * self.speed
+        self.rect.x += self.direction.x * self.speed * dt
         self.collision('horizontal')
-        self.rect.y += self.direction.y * self.speed
+        self.rect.y += self.direction.y * self.speed * dt
         self.collision('vertical')
 
     def collision(self, direction):
