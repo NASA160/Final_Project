@@ -11,30 +11,29 @@ from inventory import *
 class Game:
     def __init__(self):
         pygame.init()
-
-        self.tree = ET.parse(os.path.join('data', 'Maps', 'Map1.tmx'))
-        self.root = self.tree.getroot()
-        self.layer = self.root.find(".//layer[@name='Ground']")
-        self.data = self.layer.find('data')
-        self.csv_lines = [l.strip() for l in self.data.text.strip().splitlines() if l.strip()]
-        self.tile_map = np.array([list(map(int, line.rstrip(',').split(','))) for line in self.csv_lines])
-
-        self.NEW_TILE = 115  # whatever tile you want
-
-        self.key_held = False
-
         self.screen = pygame.display.set_mode(WINDOW_SIZE)
         self.clock = pygame.time.Clock()
 
         self.all_sprites = AllSprites()
         self.collision_sprites = pygame.sprite.Group()
-        self.tree_sprites = pygame.sprite.Group()
+
+        self.L1_tree_sprites = pygame.sprite.Group()
+        self.L2_tree_sprites = pygame.sprite.Group()
+        self.L3_tree_sprites = pygame.sprite.Group()
+        self.L4_tree_sprites = pygame.sprite.Group()
+
+        self.all_trees = [
+            (self.L1_tree_sprites, 1),
+            (self.L2_tree_sprites, 2),
+            (self.L3_tree_sprites, 3),
+            (self.L4_tree_sprites, 4),
+        ]
+
         self.inventory = inventory(0, 0)
 
 
     def setup(self):
         map = load_pygame(os.path.join('data', 'Maps', 'Map1.tmx'))
-        self.tree_pos = []
 
         for x, y, image in map.get_layer_by_name('Water').tiles():
             Sprite((x * TILE_SIZE * SCALE_FACTOR, y * TILE_SIZE * SCALE_FACTOR), image, self.all_sprites)
@@ -45,8 +44,17 @@ class Game:
         for x, y, image in map.get_layer_by_name('Details').tiles():
             Sprite((x * TILE_SIZE * SCALE_FACTOR, y * TILE_SIZE * SCALE_FACTOR), image, self.all_sprites)
 
-        for obj in map.get_layer_by_name('Trees'):
-            TreeSprite((obj.x * SCALE_FACTOR, obj.y * SCALE_FACTOR), obj.image, (self.all_sprites, self.collision_sprites, self.tree_sprites))
+        for obj in map.get_layer_by_name('L1 Trees'):
+            TreeSprite((obj.x * SCALE_FACTOR, obj.y * SCALE_FACTOR), obj.image, (self.all_sprites, self.collision_sprites, self.L1_tree_sprites))
+
+        for obj in map.get_layer_by_name('L2 Trees'):
+            TreeSprite((obj.x * SCALE_FACTOR, obj.y * SCALE_FACTOR), obj.image, (self.all_sprites, self.collision_sprites, self.L2_tree_sprites))
+
+        for obj in map.get_layer_by_name('L3 Trees'):
+            TreeSprite((obj.x * SCALE_FACTOR, obj.y * SCALE_FACTOR), obj.image, (self.all_sprites, self.collision_sprites, self.L3_tree_sprites))
+
+        for obj in map.get_layer_by_name('L4 Trees'):
+            TreeSprite((obj.x * SCALE_FACTOR, obj.y * SCALE_FACTOR), obj.image, (self.all_sprites, self.collision_sprites, self.L4_tree_sprites))
 
         for obj in map.get_layer_by_name('Entities'):
             if obj.name == "Player_Start":
@@ -69,7 +77,10 @@ class Game:
             self.all_sprites.draw(self.player.rect.center)
             self.all_sprites.update(self.dt)
 
-            self.inventory.draw_all(self.screen, self.tree_sprites, self.all_sprites.get_offset(), self.player.rect.center)
+            self.inventory.check_collect(self.all_trees, self.all_sprites.get_offset())
+
+
+            self.inventory.draw_all(self.screen, self.player.rect.center)
 
             pygame.display.flip()
 
