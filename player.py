@@ -7,7 +7,7 @@ class Player(pygame.sprite.Sprite):
         self.state, self.frame_index = 'Down', 0
         self.image = pygame.image.load(os.path.join('PlayerSprites', 'Down', '0.png')).convert_alpha()
         self.image = pygame.transform.scale(self.image, (self.image.width * SCALE_FACTOR, self.image.height * SCALE_FACTOR))
-        self.rect = self.image.get_frect(center = pos)
+        self.rect = self.image.get_rect(center = pos)
         self.hitbox_rect = self.rect
 
         self.speed = PLAYER_SPEED
