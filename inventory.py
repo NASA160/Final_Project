@@ -9,7 +9,8 @@ class inventory:
     def __init__(self, logs, seeds):
 
         self.level = 0
-        self.cost = [10, 20, 30, 40]
+        self.cost = LEVEL_UP_COST
+        self.level_multiplier = LEVEL_MULTIPLIER
 
         self.clicked = False
         self.key_held = False
@@ -50,7 +51,8 @@ class inventory:
     def update(self):
         self.log_text = self.font.render(str(self.n_logs), True, self.font_color)
         self.seed_text = self.font.render(str(self.n_seeds), True, self.font_color)
-        self.text_surface = self.upgrade_font.render('Upgrade\nCost: 5', True, 'Black')
+        self.upgrade_text = f"Upgrade\nCost: {self.cost[self.level]}" if self.level != 4 else "Max Level\nReached\nYou Win!!"
+        self.text_surface = self.upgrade_font.render(self.upgrade_text, True, 'Black')
 
     def check_collect(self, tree_groups, offset):
         if pygame.mouse.get_pressed()[0] and not self.clicked:
@@ -63,7 +65,8 @@ class inventory:
 
                 for sprite in trees:
                     if sprite.rect.collidepoint(world_mouse):
-                        self.n_logs += 1
+                        self.n_logs += 1 * self.level_multiplier[level - 1]
+                        print(level)
                         if randint(3, 5) == 4:
                             self.n_seeds += 2
                         self.clicked = True
