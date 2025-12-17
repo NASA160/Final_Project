@@ -1,5 +1,6 @@
 import pygame
 import os
+from os import walk
 import xml.etree.ElementTree as ET
 import numpy as np
 

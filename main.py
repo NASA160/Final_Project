@@ -11,6 +11,18 @@ from inventory import *
 class Game:
     def __init__(self):
         pygame.init()
+
+        self.tree = ET.parse(os.path.join('data', 'Maps', 'Map1.tmx'))
+        self.root = self.tree.getroot()
+        self.layer = self.root.find(".//layer[@name='Ground']")
+        self.data = self.layer.find('data')
+        self.csv_lines = [l.strip() for l in self.data.text.strip().splitlines() if l.strip()]
+        self.tile_map = np.array([list(map(int, line.rstrip(',').split(','))) for line in self.csv_lines])
+
+        self.NEW_TILE = 115  # whatever tile you want
+
+        self.key_held = False
+
         self.screen = pygame.display.set_mode(WINDOW_SIZE)
         self.clock = pygame.time.Clock()
 
@@ -21,15 +33,15 @@ class Game:
 
 
     def setup(self):
-        map = load_pygame(os.path.join('data/Maps', 'Map1.tmx'))
+        map = load_pygame(os.path.join('data', 'Maps', 'Map1.tmx'))
         self.tree_pos = []
 
         for x, y, image in map.get_layer_by_name('Water').tiles():
             Sprite((x * TILE_SIZE * SCALE_FACTOR, y * TILE_SIZE * SCALE_FACTOR), image, self.all_sprites)
 
         for x, y, image in map.get_layer_by_name('Ground').tiles():
-            Sprite((x * TILE_SIZE * SCALE_FACTOR, y * TILE_SIZE * SCALE_FACTOR), image, self.all_sprites)
-
+            spr = Sprite((x * TILE_SIZE * SCALE_FACTOR, y * TILE_SIZE * SCALE_FACTOR), image, self.all_sprites)
+            spr._is_ground = True  # <-- add this line
         for x, y, image in map.get_layer_by_name('Details').tiles():
             Sprite((x * TILE_SIZE * SCALE_FACTOR, y * TILE_SIZE * SCALE_FACTOR), image, self.all_sprites)
 
@@ -47,8 +59,8 @@ class Game:
 
     def run(self):
         running = True
-        self.offset = pygame.Vector2()
         while running:
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
@@ -57,7 +69,8 @@ class Game:
             self.all_sprites.draw(self.player.rect.center)
             self.all_sprites.update(self.dt)
 
-            self.inventory.draw_all(self.screen, self.tree_sprites, self.all_sprites.get_offset())
+            self.inventory.draw_all(self.screen, self.tree_sprites, self.all_sprites.get_offset(), self.player.rect.center)
+
             pygame.display.flip()
 
         pygame.quit()

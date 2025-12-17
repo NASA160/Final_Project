@@ -627,8 +627,8 @@
  <objectgroup id="8" name="Collisions">
   <object id="6" x="65.0693" y="3031.18" width="3200" height="54.0891"/>
   <object id="8" x="509.284" y="3034.48"/>
-  <object id="9" x="-10.596" y="93.3717" width="3200" height="54.0891"/>
-  <object id="10" x="104.237" y="33.2433" width="54" height="3200.09"/>
+  <object id="9" x="-10" y="93" width="3200" height="54"/>
+  <object id="10" x="103" y="33" width="54" height="3200"/>
   <object id="11" x="3039.45" y="74.5602" width="54" height="3200.09"/>
  </objectgroup>
 </map>
